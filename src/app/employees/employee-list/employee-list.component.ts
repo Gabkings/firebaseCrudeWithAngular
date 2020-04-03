@@ -1,11 +1,13 @@
+import { NotificationsService } from "./../../shared/notifications.service";
+import { EmployeeComponent } from "./../employee/employee.component";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { EmployeeService } from "src/app/shared/employee.service";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { DepartmentsService } from "src/app/shared/departments.service";
-import { NotificationsService } from "src/app/shared/notifications.service";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { MatPaginator } from "@angular/material/paginator";
+
 @Component({
   selector: "app-employee-list",
   templateUrl: "./employee-list.component.html",
@@ -14,7 +16,9 @@ import { MatPaginator } from "@angular/material/paginator";
 export class EmployeeListComponent implements OnInit {
   constructor(
     private service: EmployeeService,
-    private departmentService: DepartmentsService
+    private departmentService: DepartmentsService,
+    private dialog: MatDialog,
+    private notificationsService: NotificationsService
   ) {}
 
   listData: MatTableDataSource<any>;
@@ -50,7 +54,7 @@ export class EmployeeListComponent implements OnInit {
       this.listData.filterPredicate = (data, filter) => {
         return this.displayedColumns.some(ele => {
           return (
-            ele != "actions" && (data[ele].toLowerCase().indexOf(filter) != -1)
+            ele != "actions" && data[ele].toLowerCase().indexOf(filter) != -1
           );
         });
       };
@@ -64,5 +68,30 @@ export class EmployeeListComponent implements OnInit {
 
   applyFilter() {
     this.listData.filter = this.searchKey.trim().toLowerCase();
+  }
+
+  onClick() {
+    this.service.initializeFormGroup();
+    const modalConfig = new MatDialogConfig();
+    modalConfig.autoFocus = true;
+    modalConfig.width = "60%";
+    modalConfig.disableClose = true;
+    this.dialog.open(EmployeeComponent, modalConfig);
+  }
+
+  editClick(row) {
+    this.service.populateForm(row);
+    const modalConfig = new MatDialogConfig();
+    modalConfig.autoFocus = true;
+    modalConfig.width = "60%";
+    modalConfig.disableClose = true;
+    this.dialog.open(EmployeeComponent, modalConfig);
+  }
+
+  delClick(row) {
+    if (confirm("Are you sure to delete this record ?")) {
+      this.service.deleteEmployee(row);
+      this.notificationsService.warn("! Deleted successfully");
+    }
   }
 }

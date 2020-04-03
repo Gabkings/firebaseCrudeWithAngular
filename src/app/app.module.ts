@@ -39,6 +39,7 @@ import { MatIconModule } from "@angular/material/icon";
     EmployeeListComponent
   ],
   imports: [
+    MatDialogModule,
     MatDatepickerModule,
     MatDialogModule,
     MatIconModule,
@@ -64,6 +65,7 @@ import { MatIconModule } from "@angular/material/icon";
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebaseConfig)
   ],
+  entryComponents: [EmployeeComponent],
   providers: [EmployeeService, DatePipe, DepartmentsService],
   bootstrap: [AppComponent]
 })
